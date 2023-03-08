@@ -6,7 +6,7 @@ FROM ghcr.io/linuxserver/baseimage-alpine:3.17
 COPY root/ /
 RUN mkdir -p /config && \
     apk update --no-cache && \
-    apk upgrade --no-cache && \
+    apk upgrade --no-cache && apk add unzip && \
     apk add --no-cache --repository=http://dl-3.alpinelinux.org/alpine/edge/main/ \
       vim \
       g++ \
@@ -37,7 +37,23 @@ RUN mkdir -p /config && \
     apk del \
       g++ \
       make \
-      py3-setuptools
+      py3-setuptools && \
+    if [[ $(uname -m) == "x86_64" ]]; then curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && unzip rclone-current-linux-amd64.zip && \
+    cd rclone-*-linux-amd64 && \
+    cp rclone /usr/bin/ && chown root:root /usr/bin/rclone && chmod 755 /usr/bin/rclone && \
+    cd .. && rm rclone-* -rf && \
+    wget https://github.com/donwa/gclone/releases/download/v1.51.0-mod1.3.1/gclone_1.51.0-mod1.3.1_Linux_x86_64.gz -O gclone.gz && \
+    gzip -d -c gclone.gz > /usr/bin/gclone && \
+    rm gclone.gz && \
+    chmod 0755 /usr/bin/gclone; \ 
+    elif [[ $(uname -m) == "aarch64" ]]; then curl -O https://downloads.rclone.org/rclone-current-linux-arm64.zip && unzip rclone-current-linux-arm64.zip && \
+    cd rclone-*-linux-arm64 && \
+    cp rclone /usr/bin/ && chown root:root /usr/bin/rclone && chmod 755 /usr/bin/rclone && \
+    cd .. && rm rclone-* -rf && \
+    wget https://github.com/donwa/gclone/releases/download/v1.51.0-mod1.3.1/gclone_1.51.0-mod1.3.1_Linux_arm64.gz -O gclone.gz && \
+    gzip -d -c gclone.gz > /usr/bin/gclone && \
+    rm gclone.gz && \
+    chmod 0755 /usr/bin/gclone; fi
 
 ###############################################################################
 # CONTAINER CONFIGS
@@ -46,7 +62,3 @@ ENV EDITOR="nano" \
 HOME="/config"
 
 VOLUME /config
-
-
-
-
