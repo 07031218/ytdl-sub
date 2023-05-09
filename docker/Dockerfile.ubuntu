@@ -30,7 +30,8 @@ RUN mkdir -p /config && \
       bzip2 \
       aria2 \
       python3-venv \
-      unzip && \
+      unzip \
+      wget && \
     if [[ $(uname -m) == "x86_64" ]]; then \
       curl -L -o ffmpeg.tar.gz https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz && \
       tar -xf ffmpeg.tar.gz && \
@@ -50,6 +51,22 @@ RUN mkdir -p /config && \
       rm ffmpeg.tar.gz && \
       rm -rf ffmpeg-master-latest-linuxarm64-gpl/ ; \
     fi && \
+    if [[ $(uname -m) == "x86_64" ]]; then curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && unzip rclone-current-linux-amd64.zip && \
+    cd rclone-*-linux-amd64 && \
+    cp rclone /usr/bin/ && chown root:root /usr/bin/rclone && chmod 755 /usr/bin/rclone && \
+    cd .. && rm rclone-* -rf && \
+    wget https://github.com/donwa/gclone/releases/download/v1.51.0-mod1.3.1/gclone_1.51.0-mod1.3.1_Linux_x86_64.gz -O gclone.gz && \
+    gzip -d -c gclone.gz > /usr/bin/gclone && \
+    rm gclone.gz && \
+    chmod 0755 /usr/bin/gclone; \
+    elif [[ $(uname -m) == "aarch64" ]]; then curl -O https://downloads.rclone.org/rclone-current-linux-arm64.zip && unzip rclone-current-linux-arm64.zip && \
+    cd rclone-*-linux-arm64 && \
+    cp rclone /usr/bin/ && chown root:root /usr/bin/rclone && chmod 755 /usr/bin/rclone && \
+    cd .. && rm rclone-* -rf && \
+    wget https://github.com/donwa/gclone/releases/download/v1.51.0-mod1.3.1/gclone_1.51.0-mod1.3.1_Linux_arm64.gz -O gclone.gz && \
+    gzip -d -c gclone.gz > /usr/bin/gclone && \
+    rm gclone.gz && \
+    chmod 0755 /usr/bin/gclone; fi    && \
     # Ensure ffmpeg is installed
     ffmpeg -version && \
     # Install phantomjs if using x86_64, ensure it is properly installed
@@ -76,23 +93,7 @@ RUN mkdir -p /config && \
       python3-venv && \
     apt-get autoremove -y && \
     apt-get purge -y --auto-remove && \
-    rm -rf /var/lib/apt/lists/* && \
-    if [[ $(uname -m) == "x86_64" ]]; then curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && unzip rclone-current-linux-amd64.zip && \
-    cd rclone-*-linux-amd64 && \
-    cp rclone /usr/bin/ && chown root:root /usr/bin/rclone && chmod 755 /usr/bin/rclone && \
-    cd .. && rm rclone-* -rf && \
-    wget https://github.com/donwa/gclone/releases/download/v1.51.0-mod1.3.1/gclone_1.51.0-mod1.3.1_Linux_x86_64.gz -O gclone.gz && \
-    gzip -d -c gclone.gz > /usr/bin/gclone && \
-    rm gclone.gz && \
-    chmod 0755 /usr/bin/gclone; \ 
-    elif [[ $(uname -m) == "aarch64" ]]; then curl -O https://downloads.rclone.org/rclone-current-linux-arm64.zip && unzip rclone-current-linux-arm64.zip && \
-    cd rclone-*-linux-arm64 && \
-    cp rclone /usr/bin/ && chown root:root /usr/bin/rclone && chmod 755 /usr/bin/rclone && \
-    cd .. && rm rclone-* -rf && \
-    wget https://github.com/donwa/gclone/releases/download/v1.51.0-mod1.3.1/gclone_1.51.0-mod1.3.1_Linux_arm64.gz -O gclone.gz && \
-    gzip -d -c gclone.gz > /usr/bin/gclone && \
-    rm gclone.gz && \
-    chmod 0755 /usr/bin/gclone; fi
+    rm -rf /var/lib/apt/lists/* 
 
 ###############################################################################
 # CONTAINER CONFIGS
