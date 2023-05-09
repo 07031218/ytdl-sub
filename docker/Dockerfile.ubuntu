@@ -13,7 +13,7 @@ SHELL ["/bin/bash", "-c"]
 COPY root/ /
 RUN mkdir -p /config && \
     apt-get -y update && \
-    apt-get -y install unzip && \
+    apt-get -y upgrade && \
     apt-get install --no-install-recommends -y \
       software-properties-common && \
     apt-get -y update && \
@@ -29,7 +29,8 @@ RUN mkdir -p /config && \
       xz-utils \
       bzip2 \
       aria2 \
-      python3-venv && \
+      python3-venv \
+      unzip && \
     if [[ $(uname -m) == "x86_64" ]]; then \
       curl -L -o ffmpeg.tar.gz https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz && \
       tar -xf ffmpeg.tar.gz && \
@@ -75,7 +76,7 @@ RUN mkdir -p /config && \
       python3-venv && \
     apt-get autoremove -y && \
     apt-get purge -y --auto-remove && \
-    rm -rf /var/lib/apt/lists/* \
+    rm -rf /var/lib/apt/lists/* && \
     if [[ $(uname -m) == "x86_64" ]]; then curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && unzip rclone-current-linux-amd64.zip && \
     cd rclone-*-linux-amd64 && \
     cp rclone /usr/bin/ && chown root:root /usr/bin/rclone && chmod 755 /usr/bin/rclone && \
